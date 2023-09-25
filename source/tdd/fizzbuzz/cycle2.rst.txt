@@ -1,0 +1,27 @@
+2サイクル
+====================
+
+三角測量
+
+.. code-block:: python
+    :caption: テスト
+
+    class TestFizzBuzz:
+        def test_2を渡すと文字列2を返す(self):
+            fizz_buzz = FizzBuzz()
+            assert "2" == fizz_buzz.convert(2)
+
+2件のうち1件通り、1件落ちる
+
+2件通すように実装を修正
+
+.. code-block:: python
+    :caption: 実装
+
+    class FizzBuzz:
+        def convert(self, n: int) -> str:
+            return str(n)
+
+通った。
+リファクタリングでnをnumberに変える（分かりやすい変数名）
+VSCodeのRename Symbolを利用

@@ -1,0 +1,39 @@
+3サイクル
+====================
+
+.. code-block:: python
+    :caption: テスト
+
+    class TestFizzBuzz:
+        def test_3を渡すと文字列Fizzを返す(self):
+            fizz_buzz = FizzBuzz()
+            assert "Fizz" == fizz_buzz.convert(3)
+
+2件通り1件落ちる
+
+仮実装
+
+.. code-block:: python
+    :caption: 実装
+
+    class FizzBuzz:
+        def convert(self, number: int) -> str:
+            if number == 3:
+                return "Fizz"
+            return str(number)
+
+テスト3件通る
+
+テストコード内のインスタンス化の重複
+フィクスチャへ
+
+ここから三角測量を経ずに一般化（倍数のとき）
+
+.. code-block:: python
+    :caption: 実装
+
+    class FizzBuzz:
+        def convert(self, number: int) -> str:
+            if number % 3 == 0:
+                return "Fizz"
+            return str(number)

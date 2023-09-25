@@ -1,0 +1,22 @@
+5サイクル
+====================
+
+.. code-block:: python
+    :caption: テスト
+
+    class TestFizzBuzz:
+        def test_15を渡すと文字列FizzBuzzを返す(self, fizz_buzz):
+            assert "FizzBuzz" == fizz_buzz.convert(15)
+
+.. code-block:: python
+    :caption: 実装
+
+    class FizzBuzz:
+        def convert(self, number: int) -> str:
+            if number % 3 == 0 and number % 5 == 0:
+                return "FizzBuzz"
+            if number % 3 == 0:
+                return "Fizz"
+            if number % 5 == 0:
+                return "Buzz"
+            return str(number)

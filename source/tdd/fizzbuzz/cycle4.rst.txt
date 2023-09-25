@@ -1,0 +1,24 @@
+4サイクル
+====================
+
+.. code-block:: python
+    :caption: テスト
+
+    class TestFizzBuzz:
+        def test_5を渡すと文字列Buzzを返す(self, fizz_buzz):
+            assert "Buzz" == fizz_buzz.convert(5)
+
+3件通り1件落ちる
+
+明白な実装（ここまで開発してきてテストコードには自信がある）
+
+.. code-block:: python
+    :caption: 実装
+
+    class FizzBuzz:
+        def convert(self, number: int) -> str:
+            if number % 3 == 0:
+                return "Fizz"
+            if number % 5 == 0:
+                return "Buzz"
+            return str(number)
