@@ -1,0 +1,22 @@
+環境構築
+==============================
+
+.. :file:`__init__.py` のあるディレクトリを用意しておいてもいいかも
+
+エディタでフォーマットがかかる設定
+
+pip install pytest pytest-randomly pytest-watch
+
+環境構築できている確認
+
+.. code-block:: python
+
+    class TestFizzBuzz:
+        def test_fail(self):
+            assert False
+
+TODOリスト
+==============================
+
+仕様を整理
+（優先度の付け方、TDDBC参照）
