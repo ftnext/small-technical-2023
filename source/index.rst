@@ -10,6 +10,7 @@ Welcome to Small Technical Practices Workshop's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   chapter-tdd
 
 
 Indices and tables
