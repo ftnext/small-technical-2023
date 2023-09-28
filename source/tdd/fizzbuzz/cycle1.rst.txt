@@ -1,8 +1,20 @@
 1サイクル
 ====================
 
+.. code-block:: markdown
+    :caption: TODOリスト
+
+    - [ ] 数をそのまま文字列に変換する
+      - [ ] 1を渡すと文字列1を返す
+    - [ ] 3の倍数のときは数の代わりに「Fizz」に変換する
+    - [ ] 5の倍数のときは数の代わりに「Buzz」に変換する
+    - [ ] 15の倍数のときは数の代わりに「FizzBuzz」に変換する
+
+Red🟥 ImportError
+------------------------------
+
 .. code-block:: python
-    :caption: テスト
+    :caption: tests/test_fizzbuzz.py
 
     from fizzbuzz import FizzBuzz
 
@@ -10,18 +22,40 @@
         def test_1を渡すと文字列1を返す(self):
             ...
 
-NameError（コンパイルできないに相当）
+.. code-block:: shell
+
+        from fizzbuzz import FizzBuzz
+    E   ImportError: cannot import name 'FizzBuzz' from 'fizzbuzz' (/.../small-technical-2023/examples/tdd/fizzbuzz/__init__.py)
+
+テストで使いたいクラスがまだないため、それをimportできないというエラー
+
+.. tip:: ``ImportError``
+
+    https://docs.python.org/ja/3/library/exceptions.html#ImportError
+
+Green🟩 ImportError解決
+------------------------------
 
 .. code-block:: python
-    :caption: 実装
+    :caption: fizzbuzz/__init__.py
 
     class FizzBuzz:
         ...
 
-importできるようになるので、テストを書く
+.. tip:: file:`__init__.py`
+
+    * file:`__init__.py` が置かれたディレクトリは **パッケージ** となる
+    * パッケージ ``pkgA`` の file:`__init__.py` の ``Foo`` クラスは ``from pkgA import Foo`` とimportできる
+
+        * ``pkgA`` の file:`foo.py` の ``Foo`` クラスは ``from pkgA.foo import Foo``
+
+Red🟥 AttributeError
+------------------------------
+
+importできるようになったので、アサーションを書く
 
 .. code-block:: python
-    :caption: テスト
+    :caption: tests/test_fizzbuzz.py
 
     from fizzbuzz import FizzBuzz
 
@@ -30,12 +64,25 @@ importできるようになるので、テストを書く
             fizz_buzz = FizzBuzz()
             assert "1" == fizz_buzz.convert(1)
 
-インスタンス化はできる
+.. code-block:: shell
 
-convertメソッド呼び出し
-AttributeError
+        def test_1を渡すと文字列1を返す(self):
+            fizz_buzz = FizzBuzz()
+    >       assert "1" == fizz_buzz.convert(1)
+    E       AttributeError: 'FizzBuzz' object has no attribute 'convert'
 
-convertメソッドを定義
+
+- インスタンス化はできている
+- ``convert`` メソッドの呼び出しで ``AttributeError`` 送出
+
+.. tip:: ``AttributeError``
+
+    https://docs.python.org/ja/3/library/exceptions.html#AttributeError
+
+Green🟩 AttributeError解決
+------------------------------
+
+実装して、convertメソッドを定義
 
 .. code-block:: python
     :caption: 実装
@@ -44,9 +91,18 @@ convertメソッドを定義
         def convert(self, n: int) -> str:
             return ""
 
-AssertionError
+🟥 AssertionError
+
+.. code-block:: shell
+
+        def test_1を渡すと文字列1を返す(self):
+            fizz_buzz = FizzBuzz()
+    >       assert "1" == fizz_buzz.convert(1)
+    E       AssertionError: assert '1' == ''
+    E         + 1
 
 **仮実装**
+------------------------------
 
 .. code-block:: python
     :caption: 実装
@@ -57,4 +113,4 @@ AssertionError
 
 通った。リファクタリングは特になし
 
-仮実装でテストのテストをした。落ちるべきときに落ちる
+仮実装で **テストのテスト** をした。落ちるべきときに落ちる

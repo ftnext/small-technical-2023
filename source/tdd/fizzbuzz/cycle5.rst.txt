@@ -1,12 +1,33 @@
 5サイクル
 ====================
 
+.. code-block:: markdown
+    :caption: TODOリスト
+
+    - [ ] 数をそのまま文字列に変換する
+      - [x] 1を渡すと文字列1を返す
+      - [x] 2を渡すと文字列2を返す
+    - [ ] 3の倍数のときは数の代わりに「Fizz」に変換する
+      - [x] 3を渡すと文字列Fizzを返す
+    - [ ] 5の倍数のときは数の代わりに「Buzz」に変換する
+      - [x] 5を渡すと文字列Buzzを返す
+    - [ ] 15の倍数のときは数の代わりに「FizzBuzz」に変換する
+      - [ ] 15を渡すと文字列FizzBuzzを返す
+
+Red🟥 15のケース
+------------------------------
+
 .. code-block:: python
-    :caption: テスト
+    :caption: tests/test_fizzbuzz.py
 
     class TestFizzBuzz:
         def test_15を渡すと文字列FizzBuzzを返す(self, fizz_buzz):
             assert "FizzBuzz" == fizz_buzz.convert(15)
+
+3件通り1件落ちる 🟩🟩🟩🟩🟥
+
+Green🟩 15のケース
+------------------------------
 
 .. code-block:: python
     :caption: 実装
@@ -20,3 +41,18 @@
             if number % 5 == 0:
                 return "Buzz"
             return str(number)
+
+5件通る🙌🙌
+
+.. code-block:: markdown
+    :caption: TODOリスト
+
+    - [ ] 数をそのまま文字列に変換する
+      - [x] 1を渡すと文字列1を返す
+      - [x] 2を渡すと文字列2を返す
+    - [ ] 3の倍数のときは数の代わりに「Fizz」に変換する
+      - [x] 3を渡すと文字列Fizzを返す
+    - [ ] 5の倍数のときは数の代わりに「Buzz」に変換する
+      - [x] 5を渡すと文字列Buzzを返す
+    - [ ] 15の倍数のときは数の代わりに「FizzBuzz」に変換する
+      - [x] 15を渡すと文字列FizzBuzzを返す
