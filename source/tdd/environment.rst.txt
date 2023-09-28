@@ -10,13 +10,46 @@ pip install pytest pytest-randomly pytest-watch
 環境構築できている確認
 
 .. code-block:: python
+    :caption: tests/test_fizzbuzz.py
 
     class TestFizzBuzz:
         def test_fail(self):
             assert False
 
+.. note:: Uncle Bobは何もしないテストで確認する
+
+    .. code-block:: python
+        :caption: tests/test_fizzbuzz.py
+
+        class TestFizzBuzz:
+            def test_nothing(self):
+                ...
+
+.. tip:: Pythonで何もしない
+
+    - pass文 https://docs.python.org/ja/3/reference/simple_stmts.html#the-pass-statement
+
+        pass は、構文法的には文が必要だが、コードとしては何も実行したくない場合のプレースホルダとして有用です。
+    
+    - Ellipsis ``...`` https://docs.python.org/ja/3/reference/datamodel.html#ellipsis
+
+        - ``pass`` の代わりに使えます
+
 TODOリスト
 ==============================
 
-仕様を整理
-（優先度の付け方、TDDBC参照）
+FizzBuzzの仕様を整理
+
+.. code-block:: markdown
+
+    - [ ] 数をそのまま文字列に変換する
+    - [ ] 3の倍数のときは数の代わりに「Fizz」に変換する
+    - [ ] 5の倍数のときは数の代わりに「Buzz」に変換する
+    - [ ] 15の倍数のときは数の代わりに「FizzBuzz」に変換する
+
+ref: `TDD Boot Camp 2020 Online #1 基調講演/ライブコーディング (55:54) <https://www.youtube.com/live/Q-FJ3XmFlT8?si=2f1Yn64ihWb1IyTE&t=3354>`__
+
+TDDBCのライブコーディングからは以下が参考になります
+
+- TODOリストの作り方
+- 重要度の付け方（**重要度が高く、テストしやすい** 項目を実現する）
