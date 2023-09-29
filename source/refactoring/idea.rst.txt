@@ -1,0 +1,30 @@
+リファクタリングのアイデア
+==============================
+
+文字コードに変換する必要なくない？
+
+- ``transform_letter`` 関数の引数
+- ``is_between`` 関数の引数
+
+今の実装は、ある文字が「a-mの範囲にあるか」「A-Mの範囲にあるか」などを文字コードに揃えて求めている。
+
+💡文字コードにしなくても **文字の大小関係** で求められる！
+
+.. code-block:: python
+
+    >>> ord("a") <= ord("c") <= ord("m")
+    True
+    >>> "a" <= "c" <= "m"
+    True
+
+リファクタリングしてこうしたい
+
+.. mermaid::
+
+    sequenceDiagram
+        プログラマ->>transform: 文字列 nikkie
+        loop 各文字について
+            transform->>transform_letter: 1文字
+            transform_letter-->>transform: 13字入れ替えた1文字
+        end
+        transform-->>プログラマ: 13字入れ替えた文字列 avxxvr
