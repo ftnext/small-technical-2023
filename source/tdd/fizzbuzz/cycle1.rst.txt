@@ -10,6 +10,19 @@
     - [ ] 5の倍数のときは数の代わりに「Buzz」に変換する
     - [ ] 15の倍数のときは数の代わりに「FizzBuzz」に変換する
 
+1を渡すと文字列1を返す
+
+Q: どのようにやりますか？
+
+.. warning:: かつてのnikkieの場合
+
+    * テストを全部書き切る
+    * テストが落ちているので実装を書く
+    * リファクタリングして次のケースへ
+
+:command:`ptw` とコマンドを叩き、ファイルの変更のたびにテストが流れるようにします。
+:kbd:`Ctrl+C` で抜けられます
+
 Red🟥 ImportError
 ------------------------------
 
@@ -33,6 +46,8 @@ Red🟥 ImportError
 
     https://docs.python.org/ja/3/library/exceptions.html#ImportError
 
+3原則の1「本番コードがないためテスト失敗」となったので、2「失敗を解決するに本番コードを書く」へ進む
+
 Green🟩 ImportError解決
 ------------------------------
 
@@ -48,6 +63,8 @@ Green🟩 ImportError解決
     * パッケージ ``pkgA`` の file:`__init__.py` の ``Foo`` クラスは ``from pkgA import Foo`` とimportできる
 
         * ``pkgA`` の file:`foo.py` の ``Foo`` クラスは ``from pkgA.foo import Foo``
+
+原則3「テストがパスしたら、追加のテストを書く」より、本番コードには何もしないクラスを書くだけ
 
 Red🟥 AttributeError
 ------------------------------
@@ -79,7 +96,9 @@ importできるようになったので、アサーションを書く
 
     https://docs.python.org/ja/3/library/exceptions.html#AttributeError
 
-Green🟩 AttributeError解決
+3原則の1「本番コードがないためテスト失敗」となったので、2「失敗を解決するに本番コードを書く」へ
+
+AttributeError解決
 ------------------------------
 
 実装して、convertメソッドを定義
@@ -101,7 +120,9 @@ Green🟩 AttributeError解決
     E       AssertionError: assert '1' == ''
     E         + 1
 
-**仮実装**
+まだ 1「本番コードがないためテスト失敗」の状態
+
+Green🟩 **仮実装**
 ------------------------------
 
 .. code-block:: python
@@ -113,4 +134,6 @@ Green🟩 AttributeError解決
 
 通った。リファクタリングは特になし
 
-仮実装で **テストのテスト** をした。落ちるべきときに落ちる
+テストがパスしたので次のテストへ
+
+仮実装で **テストのテスト** をした。落ちるべきときに落ちる（TDDBCより）
