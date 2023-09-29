@@ -17,6 +17,7 @@ extensions = [
     'sphinx.ext.githubpages',
     "sphinx_new_tab_link",
     "sphinxcontrib.mermaid",
+    "sphinxext.opengraph",
 ]
 
 templates_path = ['_templates']
