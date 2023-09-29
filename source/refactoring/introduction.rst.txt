@@ -1,0 +1,75 @@
+文字の変換プログラム
+==============================
+
+アルファベット大文字小文字を **13字ずらす** （:file:`rot13.py`）
+
+.. LTスライドの説明も取り込む
+
+* a は13字後ろの n に変換
+* o は13字手前の b に変換
+
+与えた文字列の1つ1つの文字を13字ずらす
+
+* abc -> nop
+* xyz -> klm
+
+テストがすでにある（:file:`test_rot13.py`）。
+:file:`rot13.py` をリファクタリングしていく
+
+現状の実装
+------------------------------
+
+.. mermaid::
+
+    sequenceDiagram
+        プログラマ->>transform: 文字列 nikkie
+        loop 各文字について
+            transform->>transform_letter: 1文字の文字コード
+            transform_letter->>is_between: 文字コードは"a"と"m"の範囲か
+            is_between->>code_for: "a"
+            code_for-->>is_between: "a"の文字コード
+            is_between->>code_for: "m"
+            code_for-->>is_between: "m"の文字コード
+            is_between-->>transform_letter: True / False
+            transform_letter->>is_between: 文字コードは ... の範囲か
+            is_between->>code_for: ...
+            code_for-->>is_between: ...
+            is_between-->>transform_letter: True / False
+            transform_letter-->>transform: 13字入れ替えた1文字
+        end
+        transform-->>プログラマ: 13字入れ替えた文字列 avxxvr
+
+ユーザが使う関数 ``transform``
+
+* 与えられたinputと同じ長さで13字ずらした文字を並べて返す
+
+.. literalinclude:: ../examples/refactoring/rot13.py
+    :language: python
+    :pyobject: transform
+
+``transform_letter``
+
+* ``transform`` で1文字を文字コードに変換してから呼ばれる（``ord``）
+* 文字コードを元に13字だけずらした文字を返す（変換）
+
+.. literalinclude:: ../examples/refactoring/rot13.py
+    :language: python
+    :pyobject: transform_letter
+
+``is_between``
+
+* ある文字コードが a から m の範囲にあるかのような判定で ``transform_letter`` から呼ばれる
+* 文字コードが範囲内にあるかどうかを返す
+
+.. literalinclude:: ../examples/refactoring/rot13.py
+    :language: python
+    :pyobject: is_between
+
+``code_for`` 
+
+* ``is_between`` から呼ばれる
+* 文字の文字コードを返す
+
+.. literalinclude:: ../examples/refactoring/rot13.py
+    :language: python
+    :pyobject: code_for
