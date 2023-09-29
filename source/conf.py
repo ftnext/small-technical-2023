@@ -16,6 +16,7 @@ author = 'nikkie'
 extensions = [
     'sphinx.ext.githubpages',
     "sphinx_new_tab_link",
+    "sphinxcontrib.mermaid",
 ]
 
 templates_path = ['_templates']
