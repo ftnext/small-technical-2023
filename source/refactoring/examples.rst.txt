@@ -1,0 +1,174 @@
+リファクタリング：関数のシグネチャ変更
+============================================================
+
+* 一部のIDEではサポート
+* VS CodeはPython拡張をインストールしても、シグネチャ変更をサポートしていないように思われる
+
+要はこうしたい
+
+.. code-block:: diff
+
+    - def transform_letter(char_code: int) -> str:
+    + def transform_letter(letter: str) -> str:
+
+Q: どのようにやりますか？
+
+.. warning:: かつてのnikkieの場合
+
+    * char_code引数を消してletter引数に置き換え
+    * 変数名でなく型も変わっているので、関係していそうなところを一度に直す
+    * テストが通るまでこれを続ける（長いRed...）
+
+初手：引数を追加するだけ
+------------------------------
+
+``transform_letter`` にまずは引数を追加
+
+- 文字列型の ``letter`` 引数を追加（第1引数）
+- 引数 ``char_code`` は最終的にはなくしたいが、いまはまだなくさず第2引数とする
+
+.. code-block:: diff
+    :caption: rot13.py
+
+    def transform(input: str) -> str:
+        result = ""
+        for character in input:
+            char_code = ord(character)
+    -        result += transform_letter(char_code)
+    +        result += transform_letter(character, char_code)
+        return result
+
+    -def transform_letter(char_code: int) -> str:
+    +def transform_letter(letter: str, char_code: int) -> str:
+        if is_between(char_code, "a", "m") or is_between(char_code, "A", "M"):
+            char_code += 13
+        elif is_between(char_code, "n", "z") or is_between(char_code, "N", "Z"):
+            char_code -= 13
+        return chr(char_code)
+
+追加した引数は、この時点ではまだ使わない
+
+テストは通っています！（リファクタリングを間違えていない🙌）
+
+引数を追加 第2弾
+------------------------------
+
+* アイデアは「文字コードの比較に代えて文字で比較」
+* 比較している ``is_between`` 関数にも引数を追加
+
+.. code-block:: diff
+    :caption: rot13.py
+
+    def transform_letter(letter: str, char_code: int) -> str:
+    -    if is_between(char_code, "a", "m") or is_between(char_code, "A", "M"):
+    +    if is_between(letter, char_code, "a", "m") or is_between(letter, char_code, "A", "M"):
+            char_code += 13
+    -    elif is_between(char_code, "n", "z") or is_between(char_code, "N", "Z"):
+    +    elif is_between(letter, char_code, "n", "z") or is_between(letter, char_code, "N", "Z"):
+            char_code -= 13
+        return chr(char_code)
+
+
+    -def is_between(char_code: int, first_letter: str, last_letter: str) -> bool:
+    +def is_between(letter: str, char_code: int, first_letter: str, last_letter: str) -> bool:
+
+テストは通っています！
+
+``is_between`` 関数変更（アイデアを実装）
+------------------------------------------------------------
+
+.. code-block:: diff
+    :caption: rot13.py
+
+    def is_between(letter: str, char_code: int, first_letter: str, last_letter: str) -> bool:
+    -    return code_for(first_letter) <= char_code <= code_for(last_letter)
+    +    return first_letter <= letter <= last_letter
+
+テストは通っています！
+
+使わなくなった ``code_for`` 関数を消す
+------------------------------------------------------------
+
+.. code-block:: diff
+    :caption: rot13.py
+
+    -def code_for(letter: str) -> int:
+    -    return ord(letter)
+
+テストは通っています！
+
+関数のインライン化
+------------------------------
+
+``is_between`` 関数を **インライン化**
+
+* 関数のインライン化は、関数の抽出の逆操作
+* 関数の本体が分かりやすければ、関数をやめて処理を直に書く
+
+.. code-block:: diff
+    :caption: rot13.py
+
+    def transform_letter(letter: str, char_code: int) -> str:
+    -    if is_between(letter, char_code, "a", "m") or is_between(letter, char_code, "A", "M"):
+    +    if ("a" <= letter <= "m") or ("A" <= letter <= "M"):
+            char_code += 13
+    -    elif is_between(letter, char_code, "n", "z") or is_between(letter, char_code, "N", "Z"):
+    +    elif ("n" <= letter <= "z") or ("N" <= letter <= "Z"):
+            char_code -= 13
+        return chr(char_code)
+
+
+    -def is_between(letter: str, char_code: int, first_letter: str, last_letter: str) -> bool:
+    -    return first_letter <= letter <= last_letter
+
+1箇所ずつインライン化していくのがオススメ。
+
+すべてインライン化した時点でも、テストは通っています！
+2つ関数を消してスッキリしてきました
+
+``transform_letter`` 関数の ``char_code`` 引数を消す仕込み
+----------------------------------------------------------------------
+
+引数 ``letter`` から ``char_code`` を求めてしまいます！
+
+.. code-block:: diff
+    :caption: rot13.py
+
+    def transform_letter(letter: str, char_code: int) -> str:
+    +    char_code = ord(letter)
+        if ("a" <= letter <= "m") or ("A" <= letter <= "M"):
+            char_code += 13
+        elif ("n" <= letter <= "z") or ("N" <= letter <= "Z"):
+            char_code -= 13
+        return chr(char_code)
+
+テストは通っています！
+引数として渡される ``char_code`` 引数は再代入されるので、 **引数にあってもなくても同じ状態** となりました（削除の仕込み）
+
+ついに ``char_code`` 引数を消す！
+------------------------------------------------------------
+
+あってもなくても同じ ``char_code`` 引数を消します！
+
+.. code-block:: diff
+    :caption: rot13.py
+
+    def transform(input: str) -> str:
+        result = ""
+        for character in input:
+    -        char_code = ord(character)
+    -        result += transform_letter(character, char_code)
+    +        result += transform_letter(character)
+        return result
+
+
+    -def transform_letter(letter: str, char_code: int) -> str:
+    +def transform_letter(letter: str) -> str:
+        char_code = ord(letter)
+        if ("a" <= letter <= "m") or ("A" <= letter <= "M"):
+            char_code += 13
+        elif ("n" <= letter <= "z") or ("N" <= letter <= "Z"):
+            char_code -= 13
+        return chr(char_code)
+
+テストは通っています！
