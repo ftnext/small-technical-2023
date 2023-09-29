@@ -27,3 +27,5 @@ language = 'ja'
 
 html_theme = 'alabaster'
 html_static_path = ['_static']
+html_css_files = ["https://fonts.googleapis.com/css?family=BIZ+UDGothic"]
+html_theme_options = {"font_family": "BIZ UDGothic"}
