@@ -10,8 +10,11 @@ Welcome to Small Technical Practices Workshop's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   introduction
    chapter-tdd
    chapter-refactoring
+   practice
+   summary
 
 
 Indices and tables
