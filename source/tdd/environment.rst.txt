@@ -1,13 +1,21 @@
 環境構築
 ==============================
 
-.. :file:`__init__.py` のあるディレクトリを用意しておいてもいいかも
+.. code-block:: shell
 
-エディタでフォーマットがかかる設定
+    $ # リポジトリのルートにいる前提です
+    $ cd examples/tdd
 
-pip install pytest pytest-randomly pytest-watch
+.. code-block::
 
-環境構築できている確認
+    .
+    ├── fizzbuzz/
+    │   └── __init__.py
+    └── tests/
+        ├── __init__.py
+        └── test_fizzbuzz.py
+
+環境構築できているか確認
 
 .. code-block:: python
     :caption: tests/test_fizzbuzz.py
@@ -15,6 +23,9 @@ pip install pytest pytest-randomly pytest-watch
     class TestFizzBuzz:
         def test_fail(self):
             assert False
+
+:command:`pytest` と叩きます。
+テストが失敗したら環境構築できてます！
 
 .. note:: Uncle Bobは何もしないテストで確認する
 
