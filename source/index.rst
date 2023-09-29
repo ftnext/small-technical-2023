@@ -11,6 +11,7 @@ Welcome to Small Technical Practices Workshop's documentation!
    :caption: Contents:
 
    chapter-tdd
+   chapter-refactoring
 
 
 Indices and tables
