@@ -73,3 +73,15 @@
 .. literalinclude:: ../examples/refactoring/rot13.py
     :language: python
     :pyobject: code_for
+
+.. tip:: 文字コードまわりのPythonの組み込み関数
+
+    * ``chr`` 文字コード -> 文字
+
+      * https://docs.python.org/ja/3/library/functions.html#chr
+
+    * ``ord`` 文字 -> 文字コード
+
+      * https://docs.python.org/ja/3/library/functions.html#ord
+    
+    逆の関係
