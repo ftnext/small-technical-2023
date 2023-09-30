@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html lang="ja" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="XP祭り2023 ワークショップ ぶつかり稽古（力試し）" name="description" />
+<meta property="og:title" content="ぶつかり稽古" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="practice.html" />
+<meta property="og:site_name" content="Small Technical Practices Workshop" />
+<meta property="og:description" content="XP祭り2023 ワークショップ ぶつかり稽古（力試し）" />
+
+    <title>ぶつかり稽古 &#8212; Small Technical Practices Workshop  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=1e8636d4" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic" />
+    <script src="_static/documentation_options.js?v=c033477b"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/translations.js?v=4dbe4bdc"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="終わりに" href="summary.html" />
+    <link rel="prev" title="小さいリファクタリング" href="chapter-refactoring.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>ぶつかり稽古<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<p><em>ぶつかり稽古</em> の時間です！（ペアプロ）</p>
+<section id="rot13-py-tdd">
+<h2>お題1：rot13.py をTDDで実装する<a class="headerlink" href="#rot13-py-tdd" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">TODOリスト（出発点）</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="k">- [ ]</span> 空文字列を渡すと空文字列を返す
+<span class="k">- [ ]</span> a-mの1文字を渡すと13字後の1文字を返す
+<span class="k">- [ ]</span> A-Mの1文字を渡すと13字後の1文字を返す
+<span class="k">- [ ]</span> n-zの1文字を渡すと13字前の1文字を返す
+<span class="k">- [ ]</span> N-Zの1文字を渡すと13字前の1文字を返す
+<span class="k">- [ ]</span> a-zA-Zの複数文字を渡すと各文字を13字ずらしてできる文字列を返す
+<span class="k">- [ ]</span> アルファベットの記号を渡すと13字ずらさずにそのまま返す
+<span class="k">- [ ]</span> 数字の文字列を渡すと13字ずらさずにそのまま返す
+<span class="k">- [ ]</span> アルファベットでない文字列を渡すと13字ずらさずにそのまま返す
+<span class="k">- [ ]</span> 絵文字を渡すと13字ずらさずにそのまま返す
+</pre></div>
+</div>
+</div>
+</section>
+<section id="id2">
+<h2>お題2：整数のキュー<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">キューのTODOリスト（出発点）</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="k">- [ ]</span> 空のキューを作れる
+<span class="k">- [ ]</span> 空のキューに要素を1つ入れられる
+<span class="k">- [ ]</span> 空のキューに要素を1つ入れ、1つ取り出せる
+<span class="k">- [ ]</span> 空のキューに要素を2つ入れられる
+<span class="k">- [ ]</span> 空のキューから要素を取り出そうとしたら例外送出
+<span class="k">- [ ]</span> 空のキューにXを入れ、1つ取り出すとX
+<span class="k">- [ ]</span> 空のキューにXとYを順番に入れ、1つ取り出すとX
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Small Technical Practices Workshop</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">ようこそ！</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#id2">環境構築</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter-tdd.html">小さいテスト駆動開発</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter-refactoring.html">小さいリファクタリング</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ぶつかり稽古</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rot13-py-tdd">お題1：rot13.py をTDDで実装する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">お題2：整数のキュー</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="summary.html">終わりに</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="chapter-refactoring.html" title="前の章へ">小さいリファクタリング</a></li>
+      <li>Next: <a href="summary.html" title="次の章へ">終わりに</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, nikkie.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/practice.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
