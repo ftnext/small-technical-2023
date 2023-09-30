@@ -5,6 +5,9 @@
 
 :og:description: XP祭り2023「小さなテクニカルプラクティスのワークショップ」資料 目次
 
+.. meta::
+  :description: XP祭り2023「小さなテクニカルプラクティスのワークショップ」資料
+
 Welcome to Small Technical Practices Workshop's documentation!
 ==============================================================
 
