@@ -43,7 +43,10 @@ Refactor テストコードの重複除去
 ----------------------------------------
 
 テストコードにはインスタンス化の重複がある。
-pytestのフィクスチャを使ってインスタンス化を1箇所にまとめる
+pytestの *フィクスチャ* を使って **インスタンス化を1箇所に** まとめる
+
+VS Codeの **Extract method** が使える。
+ここではクラスに抽出（モジュールレベルで抽出しても動きます）
 
 .. code-block:: python
     :caption: tests/test_fizzbuzz.py
@@ -51,9 +54,10 @@ pytestのフィクスチャを使ってインスタンス化を1箇所にまと�
     import pytest
 
 
-    @pytest.fixture
-    def fizz_buzz() -> FizzBuzz:
-        return FizzBuzz()
+    class TestFizzBuzz:
+        @pytest.fixture
+        def fizz_buzz(self) -> FizzBuzz:
+            return FizzBuzz()
 
 定義したフィクスチャを各テスト（メソッド）で利用
 

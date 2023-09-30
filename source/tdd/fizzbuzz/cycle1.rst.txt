@@ -46,7 +46,7 @@ Red🟥 ImportError
 
     https://docs.python.org/ja/3/library/exceptions.html#ImportError
 
-3原則の1「本番コードがないためテスト失敗」となったので、2「失敗を解決するに本番コードを書く」へ進む
+3原則の1「本番コードがないためテスト失敗」となったので、2「失敗を解決するために本番コードを書く」へ進む
 
 Green🟩 ImportError解決
 ------------------------------
@@ -57,12 +57,12 @@ Green🟩 ImportError解決
     class FizzBuzz:
         ...
 
-.. tip:: file:`__init__.py`
+.. tip:: :file:`__init__.py`
 
-    * file:`__init__.py` が置かれたディレクトリは **パッケージ** となる
-    * パッケージ ``pkgA`` の file:`__init__.py` の ``Foo`` クラスは ``from pkgA import Foo`` とimportできる
+    * :file:`__init__.py` が置かれたディレクトリは **パッケージ** となる
+    * パッケージ ``pkgA`` の :file:`__init__.py` の ``Foo`` クラスは ``from pkgA import Foo`` とimportできる
 
-        * ``pkgA`` の file:`foo.py` の ``Foo`` クラスは ``from pkgA.foo import Foo``
+        * ``pkgA`` の :file:`foo.py` の ``Foo`` クラスは ``from pkgA.foo import Foo``
 
 原則3「テストがパスしたら、追加のテストを書く」より、本番コードには何もしないクラスを書くだけ
 
@@ -96,7 +96,7 @@ importできるようになったので、アサーションを書く
 
     https://docs.python.org/ja/3/library/exceptions.html#AttributeError
 
-3原則の1「本番コードがないためテスト失敗」となったので、2「失敗を解決するに本番コードを書く」へ
+3原則の1「本番コードがないためテスト失敗」となったので、2「失敗を解決するために本番コードを書く」へ
 
 AttributeError解決
 ------------------------------
@@ -136,4 +136,8 @@ Green🟩 **仮実装**
 
 テストがパスしたので次のテストへ
 
-仮実装で **テストのテスト** をした。落ちるべきときに落ちる（TDDBCより）
+仮実装で **テストのテスト** をした。
+落ちるべきときに落ち、通るべきときに通る（TDDBCより）
+
+* 実装が ``"1"`` を返すときにテストが通る
+* 実装が ``"1"`` を返さない（最初は空文字列）ならばテストは通らない

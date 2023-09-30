@@ -3,8 +3,8 @@
 
 .. code-block:: shell
 
-    $ # リポジトリのルートにいる前提です
-    $ cd examples/tdd
+    $ # examplesにいる前提です
+    $ cd tdd
 
 .. code-block::
 
@@ -26,6 +26,15 @@
 
 :command:`pytest` と叩きます。
 テストが失敗したら環境構築できてます！
+
+.. tip:: pytestのアサーション
+
+    * pytestでは、Pythonの **assert文に式を渡す**
+
+      * https://docs.python.org/ja/3/reference/simple_stmts.html#the-assert-statement
+
+    * 式が ``True`` と評価されれば、テストはパス
+    * 式が ``False`` と評価されれば、テスト失敗（fail）
 
 .. note:: Uncle Bobは何もしないテストで確認する
 

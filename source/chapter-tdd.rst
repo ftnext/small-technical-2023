@@ -17,6 +17,11 @@ Red -> Green -> Refactor のサイクルを **小さい単位で何度も** 繰�
 
 * 『`Clean Craftsmanship <https://asciidwango.jp/post/693992928727760896/clean-craftsmanship>`__』
 * `TDD Boot Camp 2020 Online #1 基調講演/ライブコーディング <https://www.youtube.com/live/Q-FJ3XmFlT8?si=KB5q9QOpTE-UyQCb>`__
+* 『`テスト駆動開発 <https://www.ohmsha.co.jp/book/9784274217883/>`__』
+
+  * 仮実装・明白な実装・三角測量（第1章〜第3章）
+
+* 『`テスト駆動Python 第2版 <https://www.shoeisha.co.jp/book/detail/9784798177458>`__』
 
 関連アウトプット
 ------------------------------
@@ -28,3 +33,5 @@ Red -> Green -> Refactor のサイクルを **小さい単位で何度も** 繰�
 * `おーい、t-wadaさん、ペアプロしようぜ！TDD Boot Camp 2020 Online #1 基調講演/ライブコーディング 視聴ログ🦁 <https://nikkie-ftnext.hatenablog.com/entry/tddbc-2020-online-archive-twada-keynote-live-coding-log>`__
 
   * 写経 https://github.com/ftnext/tddbc-fizzbuzz
+
+* `pytestでテストの前準備 〜setup_methodとフィクスチャ〜 <https://nikkie-ftnext.hatenablog.com/entry/pytest-learn-setup-method-and-fixture>`__
