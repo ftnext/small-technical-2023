@@ -46,6 +46,9 @@ Pythonのテスト環境
 .. code-block:: shell
 
     $ cd examples
+    $ # codespacesでない場合は、ここで仮想環境を作ってください（以下コマンド例）
+    $ # python3 -m venv venv --upgrade-deps
+    $ # source venv/bin/activate
     $ pip install -r requirements.in
 
 インストールされるライブラリ
