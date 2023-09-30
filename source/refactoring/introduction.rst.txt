@@ -3,18 +3,32 @@
 
 アルファベット大文字小文字を **13字ずらす** （:file:`rot13.py`）
 
-.. LTスライドの説明も取り込む
-
 * a は13字後ろの n に変換
 * o は13字手前の b に変換
+
+.. raw:: html
+
+    <iframe width="800" height="480" src="https://ftnext.github.io/2022_slides/rakus_Jul_refactoring/accumulated_small_steps.html#/3/1"
+        title="達人の驚くほど小さいリファクタリング"></iframe>
 
 与えた文字列の1つ1つの文字を13字ずらす
 
 * abc -> nop
-* xyz -> klm
+* XYZ -> KLM
 
 テストがすでにある（:file:`test_rot13.py`）。
 :file:`rot13.py` をリファクタリングしていく
+
+.. code-block:: shell
+
+    $ # examples/tdd にいる前提です（TDDの例からの続き）
+    $ cd ../refactoring # examples/refactoring
+
+.. code-block::
+
+    .
+    ├── rot13.py
+    └── test_rot13.py
 
 現状の実装
 ------------------------------

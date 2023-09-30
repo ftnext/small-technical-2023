@@ -1,6 +1,8 @@
 リファクタリング：関数のシグネチャ変更
 ============================================================
 
+https://refactoring.com/catalog/changeFunctionDeclaration.html
+
 * 一部のIDEではサポート
 * VS CodeはPython拡張をインストールしても、シグネチャ変更をサポートしていないように思われる
 
@@ -21,15 +23,8 @@ Q: どのようにやりますか？
 
 .. code-block:: shell
 
-    $ # リポジトリのルートにいる前提です
-    $ cd examples/refactoring
+    $ # examples/refactoring にいる前提です
     $ ptw
-
-.. code-block::
-
-    .
-    ├── rot13.py
-    └── test_rot13.py
 
 初手：引数を追加するだけ
 ------------------------------
