@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+:og:description: XP祭り2023「小さなテクニカルプラクティスのワークショップ」資料 目次
+
 Welcome to Small Technical Practices Workshop's documentation!
 ==============================================================
 
