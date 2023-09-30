@@ -1,0 +1,24 @@
+復習：これまでに見たリファクタリングテクニック
+============================================================
+
+小さいテスト駆動開発では、VS Codeの機能を使ってリファクタリングした
+
+名前の変更
+------------------------------
+
+.. raw:: html
+
+    <iframe width="800" height="480" src="https://ftnext.github.io/2023-slides/vscodeconjp/introduction-easy-refactoring.html#/12"
+        title="楽々入門！VS Codeで『リファクタリング』"></iframe>
+
+https://refactoring.com/catalog/renameVariable.html
+
+関数の抽出
+------------------------------
+
+.. raw:: html
+
+    <iframe width="800" height="480" src="https://ftnext.github.io/2023-slides/vscodeconjp/introduction-easy-refactoring.html#/18"
+        title="楽々入門！VS Codeで『リファクタリング』"></iframe>
+
+https://refactoring.com/catalog/extractFunction.html
