@@ -15,6 +15,7 @@ author = 'nikkie'
 
 extensions = [
     'sphinx.ext.githubpages',
+    "sphinx_copybutton",
     "sphinx_new_tab_link",
     "sphinxcontrib.mermaid",
     "sphinxext.opengraph",

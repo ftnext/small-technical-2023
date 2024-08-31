@@ -1,4 +1,5 @@
 Sphinx
+sphinx-copybutton
 sphinx-new-tab-link
 sphinxcontrib-mermaid
 sphinxext-opengraph
