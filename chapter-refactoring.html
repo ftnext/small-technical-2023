@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+<html lang="ja" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="XP祭り2023 ワークショップ、アルファベットを13字ずらすプログラムに小さいリファクタリングを繰り返し適用していきます" name="description" />
+<meta property="og:title" content="小さいリファクタリング" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="chapter-refactoring.html" />
+<meta property="og:site_name" content="Small Technical Practices Workshop" />
+<meta property="og:description" content="XP祭り2023 ワークショップ、アルファベットを13字ずらすプログラムに小さいリファクタリングを繰り返し適用していきます" />
+
+    <title>小さいリファクタリング &#8212; Small Technical Practices Workshop  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=c058f7c8" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=e39c5761" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic" />
+    <script src="_static/documentation_options.js?v=c033477b"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/translations.js?v=91613774"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="ぶつかり稽古" href="practice.html" />
+    <link rel="prev" title="小さいテスト駆動開発" href="chapter-tdd.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>小さいリファクタリング<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="id2">
+<h2>復習：これまでに見たリファクタリングテクニック<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p>小さいテスト駆動開発では、VS Codeの機能を使ってリファクタリングした</p>
+<section id="id3">
+<h3>名前の変更<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<iframe width="800" height="480" src="https://ftnext.github.io/2023-slides/vscodeconjp/introduction-easy-refactoring.html#/12"
+    title="楽々入門！VS Codeで『リファクタリング』"></iframe><p><a class="reference external" href="https://refactoring.com/catalog/renameVariable.html" rel="noopener noreferrer" target="_blank">https://refactoring.com/catalog/renameVariable.html</a></p>
+</section>
+<section id="id4">
+<h3>関数の抽出<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<iframe width="800" height="480" src="https://ftnext.github.io/2023-slides/vscodeconjp/introduction-easy-refactoring.html#/18"
+    title="楽々入門！VS Codeで『リファクタリング』"></iframe><p><a class="reference external" href="https://refactoring.com/catalog/extractFunction.html" rel="noopener noreferrer" target="_blank">https://refactoring.com/catalog/extractFunction.html</a></p>
+</section>
+</section>
+<section id="id5">
+<h2>文字の変換プログラム<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<p>アルファベット大文字小文字を <strong>13字ずらす</strong> （<code class="file docutils literal notranslate"><span class="pre">rot13.py</span></code>）</p>
+<ul class="simple">
+<li><p>a は13字後ろの n に変換</p></li>
+<li><p>o は13字手前の b に変換</p></li>
+</ul>
+<iframe width="800" height="480" src="https://ftnext.github.io/2022_slides/rakus_Jul_refactoring/accumulated_small_steps.html#/3/1"
+    title="達人の驚くほど小さいリファクタリング"></iframe><p>与えた文字列の1つ1つの文字を13字ずらす</p>
+<ul class="simple">
+<li><p>abc -&gt; nop</p></li>
+<li><p>XYZ -&gt; KLM</p></li>
+</ul>
+<p>テストがすでにある（<code class="file docutils literal notranslate"><span class="pre">test_rot13.py</span></code>）。
+<code class="file docutils literal notranslate"><span class="pre">rot13.py</span></code> をリファクタリングしていく</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="c1"># examples/tdd にいる前提です（TDDの例からの続き）</span>
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>../refactoring<span class="w"> </span><span class="c1"># examples/refactoring</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── rot13.py
+└── test_rot13.py
+</pre></div>
+</div>
+<section id="id6">
+<h3>現状の実装<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<div class="mermaid">
+            sequenceDiagram
+    プログラマ-&gt;&gt;transform: 文字列 nikkie
+    loop 各文字について
+        transform-&gt;&gt;transform_letter: 1文字の文字コード
+        transform_letter-&gt;&gt;is_between: 文字コードは&quot;a&quot;と&quot;m&quot;の範囲か
+        is_between-&gt;&gt;code_for: &quot;a&quot;
+        code_for--&gt;&gt;is_between: &quot;a&quot;の文字コード
+        is_between-&gt;&gt;code_for: &quot;m&quot;
+        code_for--&gt;&gt;is_between: &quot;m&quot;の文字コード
+        is_between--&gt;&gt;transform_letter: True / False
+        transform_letter-&gt;&gt;is_between: 文字コードは ... の範囲か
+        is_between-&gt;&gt;code_for: ...
+        code_for--&gt;&gt;is_between: ...
+        is_between--&gt;&gt;transform_letter: True / False
+        transform_letter--&gt;&gt;transform: 13字入れ替えた1文字
+    end
+    transform--&gt;&gt;プログラマ: 13字入れ替えた文字列 avxxvr
+        </div><p>ユーザが使う関数 <code class="docutils literal notranslate"><span class="pre">transform</span></code></p>
+<ul class="simple">
+<li><p>与えられたinputと同じ長さで13字ずらした文字を並べて返す</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">:</span>
+        <span class="n">char_code</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="n">transform_letter</span><span class="p">(</span><span class="n">char_code</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">transform_letter</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">transform</span></code> で1文字を文字コードに変換してから呼ばれる（<code class="docutils literal notranslate"><span class="pre">ord</span></code>）</p></li>
+<li><p>文字コードを元に13字だけずらした文字を返す（変換）</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">transform_letter</span><span class="p">(</span><span class="n">char_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; a_code = ord(&quot;a&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; transform_letter(a_code)</span>
+<span class="sd">    &#39;n&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_between</span><span class="p">(</span><span class="n">char_code</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_between</span><span class="p">(</span><span class="n">char_code</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">):</span>
+        <span class="n">char_code</span> <span class="o">+=</span> <span class="mi">13</span>
+    <span class="k">elif</span> <span class="n">is_between</span><span class="p">(</span><span class="n">char_code</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_between</span><span class="p">(</span><span class="n">char_code</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">):</span>
+        <span class="n">char_code</span> <span class="o">-=</span> <span class="mi">13</span>
+    <span class="k">return</span> <span class="nb">chr</span><span class="p">(</span><span class="n">char_code</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">is_between</span></code></p>
+<ul class="simple">
+<li><p>ある文字コードが a から m の範囲にあるかのような判定で <code class="docutils literal notranslate"><span class="pre">transform_letter</span></code> から呼ばれる</p></li>
+<li><p>文字コードが範囲内にあるかどうかを返す</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">is_between</span><span class="p">(</span><span class="n">char_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">first_letter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">last_letter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; b_code = ord(&quot;b&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; is_between(b_code, &quot;a&quot;, &quot;c&quot;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; is_between(b_code, &quot;c&quot;, &quot;e&quot;)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; # 境界は含む</span>
+<span class="sd">    &gt;&gt;&gt; is_between(b_code, &quot;b&quot;, &quot;d&quot;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; is_between(b_code, &quot;a&quot;, &quot;b&quot;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">code_for</span><span class="p">(</span><span class="n">first_letter</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">char_code</span> <span class="o">&lt;=</span> <span class="n">code_for</span><span class="p">(</span><span class="n">last_letter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">code_for</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">is_between</span></code> から呼ばれる</p></li>
+<li><p>文字の文字コードを返す</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">code_for</span><span class="p">(</span><span class="n">letter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; code_for(&quot;a&quot;)</span>
+<span class="sd">    97</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">ord</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>文字コードまわりのPythonの組み込み関数</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">chr</span></code> 文字コード -&gt; 文字</p>
+<ul>
+<li><p><a class="reference external" href="https://docs.python.org/ja/3/library/functions.html#chr" rel="noopener noreferrer" target="_blank">https://docs.python.org/ja/3/library/functions.html#chr</a></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ord</span></code> 文字 -&gt; 文字コード</p>
+<ul>
+<li><p><a class="reference external" href="https://docs.python.org/ja/3/library/functions.html#ord" rel="noopener noreferrer" target="_blank">https://docs.python.org/ja/3/library/functions.html#ord</a></p></li>
+</ul>
+</li>
+</ul>
+<p>逆の関係</p>
+</div>
+</section>
+</section>
+<section id="id7">
+<h2>リファクタリングのアイデア<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
+<p>文字コードに変換する必要なくない？</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">transform_letter</span></code> 関数の引数</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_between</span></code> 関数の引数</p></li>
+</ul>
+<p>今の実装は、ある文字が「a-mの範囲にあるか」「A-Mの範囲にあるか」などを文字コードに揃えて求めている。</p>
+<p>💡文字コードにしなくても <strong>文字の大小関係</strong> で求められる！</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;a&quot;</span> <span class="o">&lt;=</span> <span class="s2">&quot;c&quot;</span> <span class="o">&lt;=</span> <span class="s2">&quot;m&quot;</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>リファクタリングしてこうしたい</p>
+<div class="mermaid">
+            sequenceDiagram
+    プログラマ-&gt;&gt;transform: 文字列 nikkie
+    loop 各文字について
+        transform-&gt;&gt;transform_letter: 1文字
+        transform_letter--&gt;&gt;transform: 13字入れ替えた1文字
+    end
+    transform--&gt;&gt;プログラマ: 13字入れ替えた文字列 avxxvr
+        </div></section>
+<section id="id8">
+<h2>リファクタリング：関数のシグネチャ変更<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://refactoring.com/catalog/changeFunctionDeclaration.html" rel="noopener noreferrer" target="_blank">https://refactoring.com/catalog/changeFunctionDeclaration.html</a></p>
+<ul class="simple">
+<li><p>一部のIDEではサポート</p></li>
+<li><p>VS CodeはPython拡張をインストールしても、シグネチャ変更をサポートしていないように思われる</p></li>
+</ul>
+<p>要はこうしたい</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">- def transform_letter(char_code: int) -&gt; str:</span>
+<span class="gi">+ def transform_letter(letter: str) -&gt; str:</span>
+</pre></div>
+</div>
+<p>Q: どのようにやりますか？</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>かつてのnikkieの場合</p>
+<ul class="simple">
+<li><p>char_code引数を消してletter引数に置き換え</p></li>
+<li><p>変数名でなく型も変わっているので、関係していそうなところを一度に直す</p></li>
+<li><p>テストが通るまでこれを続ける（長いRed...）</p></li>
+</ul>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="c1"># examples/refactoring にいる前提です</span>
+$<span class="w"> </span>ptw
+</pre></div>
+</div>
+<section id="id9">
+<h3>初手：引数を追加するだけ<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">transform_letter</span></code> にまずは引数を追加</p>
+<ul class="simple">
+<li><p>文字列型の <code class="docutils literal notranslate"><span class="pre">letter</span></code> 引数を追加（第1引数）</p></li>
+<li><p>引数 <code class="docutils literal notranslate"><span class="pre">char_code</span></code> は最終的にはなくしたいが、いまはまだなくさず第2引数とする</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">rot13.py</span><a class="headerlink" href="#id15" title="Link to this code">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>def transform(input: str) -&gt; str:
+<span class="w"> </span>   result = &quot;&quot;
+<span class="w"> </span>   for character in input:
+<span class="w"> </span>       char_code = ord(character)
+<span class="gd">-        result += transform_letter(char_code)</span>
+<span class="gi">+        result += transform_letter(character, char_code)</span>
+<span class="w"> </span>   return result
+
+<span class="gd">-def transform_letter(char_code: int) -&gt; str:</span>
+<span class="gi">+def transform_letter(letter: str, char_code: int) -&gt; str:</span>
+<span class="w"> </span>   if is_between(char_code, &quot;a&quot;, &quot;m&quot;) or is_between(char_code, &quot;A&quot;, &quot;M&quot;):
+<span class="w"> </span>       char_code += 13
+<span class="w"> </span>   elif is_between(char_code, &quot;n&quot;, &quot;z&quot;) or is_between(char_code, &quot;N&quot;, &quot;Z&quot;):
+<span class="w"> </span>       char_code -= 13
+<span class="w"> </span>   return chr(char_code)
+</pre></div>
+</div>
+</div>
+<p>追加した引数は、この時点ではまだ使わない</p>
+<p>テストは通っています！（リファクタリングを間違えていない🙌）</p>
+</section>
+<section id="id10">
+<h3>引数を追加 第2弾<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>アイデアは「文字コードの比較に代えて文字で比較」</p></li>
+<li><p>比較している <code class="docutils literal notranslate"><span class="pre">is_between</span></code> 関数にも引数を追加</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">rot13.py</span><a class="headerlink" href="#id16" title="Link to this code">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>def transform_letter(letter: str, char_code: int) -&gt; str:
+<span class="gd">-    if is_between(char_code, &quot;a&quot;, &quot;m&quot;) or is_between(char_code, &quot;A&quot;, &quot;M&quot;):</span>
+<span class="gi">+    if is_between(letter, char_code, &quot;a&quot;, &quot;m&quot;) or is_between(letter, char_code, &quot;A&quot;, &quot;M&quot;):</span>
+<span class="w"> </span>       char_code += 13
+<span class="gd">-    elif is_between(char_code, &quot;n&quot;, &quot;z&quot;) or is_between(char_code, &quot;N&quot;, &quot;Z&quot;):</span>
+<span class="gi">+    elif is_between(letter, char_code, &quot;n&quot;, &quot;z&quot;) or is_between(letter, char_code, &quot;N&quot;, &quot;Z&quot;):</span>
+<span class="w"> </span>       char_code -= 13
+<span class="w"> </span>   return chr(char_code)
+
+
+<span class="gd">-def is_between(char_code: int, first_letter: str, last_letter: str) -&gt; bool:</span>
+<span class="gi">+def is_between(letter: str, char_code: int, first_letter: str, last_letter: str) -&gt; bool:</span>
+</pre></div>
+</div>
+</div>
+<p>テストは通っています！</p>
+</section>
+<section id="is-between">
+<h3><code class="docutils literal notranslate"><span class="pre">is_between</span></code> 関数変更（アイデアを実装）<a class="headerlink" href="#is-between" title="Link to this heading">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">rot13.py</span><a class="headerlink" href="#id17" title="Link to this code">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>def is_between(letter: str, char_code: int, first_letter: str, last_letter: str) -&gt; bool:
+<span class="gd">-    return code_for(first_letter) &lt;= char_code &lt;= code_for(last_letter)</span>
+<span class="gi">+    return first_letter &lt;= letter &lt;= last_letter</span>
+</pre></div>
+</div>
+</div>
+<p>テストは通っています！</p>
+</section>
+<section id="code-for">
+<h3>使わなくなった <code class="docutils literal notranslate"><span class="pre">code_for</span></code> 関数を消す<a class="headerlink" href="#code-for" title="Link to this heading">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">rot13.py</span><a class="headerlink" href="#id18" title="Link to this code">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">-def code_for(letter: str) -&gt; int:</span>
+<span class="gd">-    return ord(letter)</span>
+</pre></div>
+</div>
+</div>
+<p>テストは通っています！</p>
+</section>
+<section id="id11">
+<h3>関数のインライン化<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">is_between</span></code> 関数を <strong>インライン化</strong></p>
+<ul class="simple">
+<li><p>関数のインライン化は、関数の抽出の逆操作</p></li>
+<li><p>関数の本体が分かりやすければ、関数をやめて処理を直に書く</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">rot13.py</span><a class="headerlink" href="#id19" title="Link to this code">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>def transform_letter(letter: str, char_code: int) -&gt; str:
+<span class="gd">-    if is_between(letter, char_code, &quot;a&quot;, &quot;m&quot;) or is_between(letter, char_code, &quot;A&quot;, &quot;M&quot;):</span>
+<span class="gi">+    if (&quot;a&quot; &lt;= letter &lt;= &quot;m&quot;) or (&quot;A&quot; &lt;= letter &lt;= &quot;M&quot;):</span>
+<span class="w"> </span>       char_code += 13
+<span class="gd">-    elif is_between(letter, char_code, &quot;n&quot;, &quot;z&quot;) or is_between(letter, char_code, &quot;N&quot;, &quot;Z&quot;):</span>
+<span class="gi">+    elif (&quot;n&quot; &lt;= letter &lt;= &quot;z&quot;) or (&quot;N&quot; &lt;= letter &lt;= &quot;Z&quot;):</span>
+<span class="w"> </span>       char_code -= 13
+<span class="w"> </span>   return chr(char_code)
+
+
+<span class="gd">-def is_between(letter: str, char_code: int, first_letter: str, last_letter: str) -&gt; bool:</span>
+<span class="gd">-    return first_letter &lt;= letter &lt;= last_letter</span>
+</pre></div>
+</div>
+</div>
+<p>1箇所ずつインライン化していくのがオススメ。</p>
+<p>すべてインライン化した時点でも、テストは通っています！
+2つ関数を消してスッキリしてきました</p>
+</section>
+<section id="transform-letter-char-code">
+<h3><code class="docutils literal notranslate"><span class="pre">transform_letter</span></code> 関数の <code class="docutils literal notranslate"><span class="pre">char_code</span></code> 引数を消す仕込み<a class="headerlink" href="#transform-letter-char-code" title="Link to this heading">¶</a></h3>
+<p>引数 <code class="docutils literal notranslate"><span class="pre">letter</span></code> から <code class="docutils literal notranslate"><span class="pre">char_code</span></code> を求めてしまいます！</p>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">rot13.py</span><a class="headerlink" href="#id20" title="Link to this code">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>def transform_letter(letter: str, char_code: int) -&gt; str:
+<span class="gi">+    char_code = ord(letter)</span>
+<span class="w"> </span>   if (&quot;a&quot; &lt;= letter &lt;= &quot;m&quot;) or (&quot;A&quot; &lt;= letter &lt;= &quot;M&quot;):
+<span class="w"> </span>       char_code += 13
+<span class="w"> </span>   elif (&quot;n&quot; &lt;= letter &lt;= &quot;z&quot;) or (&quot;N&quot; &lt;= letter &lt;= &quot;Z&quot;):
+<span class="w"> </span>       char_code -= 13
+<span class="w"> </span>   return chr(char_code)
+</pre></div>
+</div>
+</div>
+<p>テストは通っています！
+引数として渡される <code class="docutils literal notranslate"><span class="pre">char_code</span></code> 引数は再代入されるので、 <strong>引数にあってもなくても同じ状態</strong> となりました（削除の仕込み）</p>
+</section>
+<section id="char-code">
+<h3>ついに <code class="docutils literal notranslate"><span class="pre">char_code</span></code> 引数を消す！<a class="headerlink" href="#char-code" title="Link to this heading">¶</a></h3>
+<p>あってもなくても同じ <code class="docutils literal notranslate"><span class="pre">char_code</span></code> 引数を消します！</p>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">rot13.py</span><a class="headerlink" href="#id21" title="Link to this code">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>def transform(input: str) -&gt; str:
+<span class="w"> </span>   result = &quot;&quot;
+<span class="w"> </span>   for character in input:
+<span class="gd">-        char_code = ord(character)</span>
+<span class="gd">-        result += transform_letter(character, char_code)</span>
+<span class="gi">+        result += transform_letter(character)</span>
+<span class="w"> </span>   return result
+
+
+<span class="gd">-def transform_letter(letter: str, char_code: int) -&gt; str:</span>
+<span class="gi">+def transform_letter(letter: str) -&gt; str:</span>
+<span class="w"> </span>   char_code = ord(letter)
+<span class="w"> </span>   if (&quot;a&quot; &lt;= letter &lt;= &quot;m&quot;) or (&quot;A&quot; &lt;= letter &lt;= &quot;M&quot;):
+<span class="w"> </span>       char_code += 13
+<span class="w"> </span>   elif (&quot;n&quot; &lt;= letter &lt;= &quot;z&quot;) or (&quot;N&quot; &lt;= letter &lt;= &quot;Z&quot;):
+<span class="w"> </span>       char_code -= 13
+<span class="w"> </span>   return chr(char_code)
+</pre></div>
+</div>
+</div>
+<p>テストは通っています！</p>
+</section>
+</section>
+<section id="id12">
+<h2>考察<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>小さい操作を続けて適用したことで、 <strong>Greenを保ったまま</strong> リファクタリングができた！</p>
+<ul>
+<li><p>Redになっても1つ前のGreenに <strong>すぐに戻せる</strong></p></li>
+</ul>
+</li>
+<li><p>リファクタリングは <em>ルービックキューブ</em> （『Clean Craftsmanship』）</p></li>
+<li><p>手順（や使い所）を押さえる &amp; エディタを使った操作を覚える -&gt; 常中（TDDのサイクルで自由に取り出せる）</p></li>
+</ul>
+</section>
+<section id="id13">
+<h2>参考文献<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>『<a class="reference external" href="https://www.jamesshore.com/v2/books/aoad2" rel="noopener noreferrer" target="_blank">The Art of Agile Development Second edition</a>』</p></li>
+<li><p>『<a class="reference external" href="https://asciidwango.jp/post/693992928727760896/clean-craftsmanship" rel="noopener noreferrer" target="_blank">Clean Craftsmanship</a>』</p></li>
+<li><p>『<a class="reference external" href="https://www.ohmsha.co.jp/book/9784274224546/" rel="noopener noreferrer" target="_blank">リファクタリング（第2版）</a>』</p></li>
+</ul>
+<section id="id14">
+<h3>関連アウトプット<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://nikkie-ftnext.hatenablog.com/entry/art-of-agile-development-2nd-really-small-refactoring-steps" rel="noopener noreferrer" target="_blank">え、待って！リファクタリングって1つ1つのステップそんなに小さく実施するの！？ （『The Art of Agile Development』読書録）</a></p>
+<ul>
+<li><p>写経 <a class="reference external" href="https://github.com/ftnext/aoad2e-py/tree/main/refactoring" rel="noopener noreferrer" target="_blank">https://github.com/ftnext/aoad2e-py/tree/main/refactoring</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://nikkie-ftnext.hatenablog.com/entry/clean-craftsmanship-refactoring-is-rubiks-cube" rel="noopener noreferrer" target="_blank">読書ログ | 『Clean Craftsmanship』 第5章、リファクタリングはたしかに&quot;ルービックキューブ&quot;</a></p></li>
+<li><p><a class="reference external" href="https://nikkie-ftnext.hatenablog.com/entry/vscode-f2-easy-refactoring" rel="noopener noreferrer" target="_blank">入門F2 〜VS CodeのRename Symbolで楽々リファクタリング〜</a></p></li>
+<li><p><a class="reference external" href="https://nikkie-ftnext.hatenablog.com/entry/vscode-extract-easy-refactoring" rel="noopener noreferrer" target="_blank">エディタの機能を知って身につけるリファクタリング 〜VS CodeでExtract編〜</a></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Small Technical Practices Workshop</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">ようこそ！</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#id2">環境構築</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter-tdd.html">小さいテスト駆動開発</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">小さいリファクタリング</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">復習：これまでに見たリファクタリングテクニック</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">文字の変換プログラム</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">リファクタリングのアイデア</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">リファクタリング：関数のシグネチャ変更</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">考察</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id13">参考文献</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="practice.html">ぶつかり稽古</a></li>
+<li class="toctree-l1"><a class="reference internal" href="summary.html">終わりに</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="chapter-tdd.html" title="前の章へ">小さいテスト駆動開発</a></li>
+      <li>Next: <a href="practice.html" title="次の章へ">ぶつかり稽古</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023, nikkie.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.0.2</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/chapter-refactoring.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

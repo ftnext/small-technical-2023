@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html lang="ja" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="XP祭り2023「小さなテクニカルプラクティスのワークショップ」はじめに" name="description" />
+<meta property="og:title" content="ようこそ！" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="introduction.html" />
+<meta property="og:site_name" content="Small Technical Practices Workshop" />
+<meta property="og:description" content="XP祭り2023「小さなテクニカルプラクティスのワークショップ」はじめに" />
+
+    <title>ようこそ！ &#8212; Small Technical Practices Workshop  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=c058f7c8" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=e39c5761" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic" />
+    <script src="_static/documentation_options.js?v=c033477b"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/translations.js?v=91613774"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="小さいテスト駆動開発" href="chapter-tdd.html" />
+    <link rel="prev" title="Welcome to Small Technical Practices Workshop&#39;s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>ようこそ！<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<p><em>小さいは、正義！</em></p>
+<p><a class="reference external" href="https://confengine.com/conferences/xp2023/proposal/18830" rel="noopener noreferrer" target="_blank">プロポーザル</a> より</p>
+<blockquote>
+<div><p>本ワークショップでは、この（引用注: サークルオブライフの）うちのテクニカルプラクティス（特にテスト駆動開発とリファクタリング）にフォーカスします。</p>
+<p>キーワードは「小さい」です。
+達人のテスト駆動開発やリファクタリングは小さいステップをたくさん実行します。</p>
+</div></blockquote>
+<p>小さなテクニカルプラクティスを体験して行ってください！
+ワークショップ中はお気軽にちょっとしたことでもぜひアウトプットください（私の講義というよりも、 <strong>みんなで学ぶ場</strong> にしましょう！）</p>
+<ul class="simple">
+<li><p>参加者自己紹介</p>
+<ul>
+<li><p>読んでほしいお名前（+名札）</p></li>
+<li><p>普段使っている言語</p></li>
+</ul>
+</li>
+<li><p>簡単なチェックイン（今の気持ち）</p></li>
+</ul>
+</section>
+<section id="id2">
+<h1>環境構築<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h1>
+<p>前提：Pythonの環境が構築されている</p>
+<section id="vs-code">
+<h2>VS Code 拡張<a class="headerlink" href="#vs-code" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=ms-python.python" rel="noopener noreferrer" target="_blank">Python</a></p></li>
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter" rel="noopener noreferrer" target="_blank">Black Formatter</a></p></li>
+</ul>
+<p>拡張を設定する <code class="file docutils literal notranslate"><span class="pre">settings.json</span></code> はこのワークショップのリポジトリにコミット済みです。
+（🐛リポジトリをcloneした場合はsettings.jsonを参照して動くと思いますが、Codespacesではsettings.jsonを参照する形で動かせていません）</p>
+<p>ワークショップ中にCodespaceの環境に入るために</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=MS-vsliveshare.vsliveshare" rel="noopener noreferrer" target="_blank">Live Share</a></p></li>
+</ul>
+</section>
+<section id="python">
+<h2>Pythonのテスト環境<a class="headerlink" href="#python" title="Link to this heading">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>examples
+$<span class="w"> </span><span class="c1"># codespacesでない場合は、ここで仮想環境を作ってください（以下コマンド例）</span>
+$<span class="w"> </span><span class="c1"># python3 -m venv venv --upgrade-deps</span>
+$<span class="w"> </span><span class="c1"># source venv/bin/activate</span>
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.in
+</pre></div>
+</div>
+<p>インストールされるライブラリ</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.pytest.org/en/latest/" rel="noopener noreferrer" target="_blank">pytest</a></p>
+<ul>
+<li><p>テストライブラリ</p></li>
+<li><p>Pythonの標準ライブラリにもテストライブラリはありますが、デファクトスタンダード感のあるpytestを採用しました</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://pypi.org/project/pytest-randomly/" rel="noopener noreferrer" target="_blank">pytest-randomly</a></p>
+<ul>
+<li><p>インストールするだけで <strong class="command">pytest</strong> で実行するテストの順番をランダムにします</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://pypi.org/project/pytest-watch/" rel="noopener noreferrer" target="_blank">pytest-watch</a></p>
+<ul>
+<li><p>ファイルの変更が保存されたときにpytestが流れるようにできます（都度コマンド叩かなくてよくて捗る！）</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Small Technical Practices Workshop</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ようこそ！</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#id2">環境構築</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#vs-code">VS Code 拡張</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python">Pythonのテスト環境</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapter-tdd.html">小さいテスト駆動開発</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter-refactoring.html">小さいリファクタリング</a></li>
+<li class="toctree-l1"><a class="reference internal" href="practice.html">ぶつかり稽古</a></li>
+<li class="toctree-l1"><a class="reference internal" href="summary.html">終わりに</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="前の章へ">Welcome to Small Technical Practices Workshop's documentation!</a></li>
+      <li>Next: <a href="chapter-tdd.html" title="次の章へ">小さいテスト駆動開発</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023, nikkie.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.0.2</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/introduction.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

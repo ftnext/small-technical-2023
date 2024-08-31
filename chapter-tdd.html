@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+
+<html lang="ja" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="XP祭り2023 ワークショップ、FizzBuzzを小さいテスト駆動開発で開発します" name="description" />
+<meta property="og:title" content="小さいテスト駆動開発" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="chapter-tdd.html" />
+<meta property="og:site_name" content="Small Technical Practices Workshop" />
+<meta property="og:description" content="XP祭り2023 ワークショップ、FizzBuzzを小さいテスト駆動開発で開発します" />
+
+    <title>小さいテスト駆動開発 &#8212; Small Technical Practices Workshop  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=c058f7c8" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=e39c5761" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic" />
+    <script src="_static/documentation_options.js?v=c033477b"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/translations.js?v=91613774"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="小さいリファクタリング" href="chapter-refactoring.html" />
+    <link rel="prev" title="ようこそ！" href="introduction.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>小さいテスト駆動開発<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<p>Red -&gt; Green -&gt; Refactor のサイクルを <strong>小さい単位で何度も</strong> 繰り返すテスト駆動開発</p>
+<section id="uncle-bob">
+<h2>Uncle Bob流 テスト駆動開発<a class="headerlink" href="#uncle-bob" title="Link to this heading">¶</a></h2>
+<p>『Clean Craftsmanship』第2章 (Kindle版 pp.52,53)</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>テストを書くまでは本番コードを書いてはならない。本番コードがないためにテストは失敗する。</p></li>
+<li><p>失敗するテストやコンパイルできないテストを必要以上に書いてはならない。失敗を解決するには本番コードを書く。</p></li>
+<li><p>失敗しているテストを解決する本番コードを必要以上に書いてはならない。テストがパスしたら、追加のテストを書く。</p></li>
+</ol>
+</div></blockquote>
+<p>この3原則により、小さい単位で進む</p>
+<p>4つ目はリファクタリング</p>
+</section>
+<section id="fizzbuzz">
+<h2>ハンズオンの題材 FizzBuzz<a class="headerlink" href="#fizzbuzz" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>皆さんが日々取り組まれているプログラムからすると <em>おもちゃ</em> のような感じかもしれません</p></li>
+<li><p>FizzBuzzであることは薄目で見ましょう！ 「小さい」という視点で <strong>抽出</strong> した要素をふだんのプログラミングに活かせると考えています</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>環境構築<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="c1"># examplesにいる前提です</span>
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>tdd
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── fizzbuzz/
+│   └── __init__.py
+└── tests/
+    ├── __init__.py
+    └── test_fizzbuzz.py
+</pre></div>
+</div>
+<p>環境構築できているか確認</p>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">tests/test_fizzbuzz.py</span><a class="headerlink" href="#id16" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TestFizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+<p><strong class="command">pytest</strong> と叩きます。
+テストが失敗したら環境構築できてます！</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>pytestのアサーション</p>
+<ul class="simple">
+<li><p>pytestでは、Pythonの <strong>assert文に式を渡す</strong></p>
+<ul>
+<li><p><a class="reference external" href="https://docs.python.org/ja/3/reference/simple_stmts.html#the-assert-statement" rel="noopener noreferrer" target="_blank">https://docs.python.org/ja/3/reference/simple_stmts.html#the-assert-statement</a></p></li>
+</ul>
+</li>
+<li><p>式が <code class="docutils literal notranslate"><span class="pre">True</span></code> と評価されれば、テストはパス</p></li>
+<li><p>式が <code class="docutils literal notranslate"><span class="pre">False</span></code> と評価されれば、テスト失敗（fail）</p></li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>Uncle Bobは何もしないテストで確認する</p>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">tests/test_fizzbuzz.py</span><a class="headerlink" href="#id17" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TestFizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_nothing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Pythonで何もしない</p>
+<ul>
+<li><p>pass文 <a class="reference external" href="https://docs.python.org/ja/3/reference/simple_stmts.html#the-pass-statement" rel="noopener noreferrer" target="_blank">https://docs.python.org/ja/3/reference/simple_stmts.html#the-pass-statement</a></p>
+<blockquote>
+<div><p>pass は、構文法的には文が必要だが、コードとしては何も実行したくない場合のプレースホルダとして有用です。</p>
+</div></blockquote>
+</li>
+<li><p>Ellipsis <code class="docutils literal notranslate"><span class="pre">...</span></code> <a class="reference external" href="https://docs.python.org/ja/3/reference/datamodel.html#ellipsis" rel="noopener noreferrer" target="_blank">https://docs.python.org/ja/3/reference/datamodel.html#ellipsis</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pass</span></code> の代わりに使えます</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</section>
+<section id="todo">
+<h2>TODOリスト<a class="headerlink" href="#todo" title="Link to this heading">¶</a></h2>
+<p>FizzBuzzの仕様を整理</p>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="k">- [ ]</span> 数をそのまま文字列に変換する
+<span class="k">- [ ]</span> 3の倍数のときは数の代わりに「Fizz」に変換する
+<span class="k">- [ ]</span> 5の倍数のときは数の代わりに「Buzz」に変換する
+<span class="k">- [ ]</span> 15の倍数のときは数の代わりに「FizzBuzz」に変換する
+</pre></div>
+</div>
+<p>ref: <a class="reference external" href="https://www.youtube.com/live/Q-FJ3XmFlT8?si=2f1Yn64ihWb1IyTE&amp;t=3354" rel="noopener noreferrer" target="_blank">TDD Boot Camp 2020 Online #1 基調講演/ライブコーディング (55:54)</a></p>
+<p>TDDBCのライブコーディングからは以下が参考になります</p>
+<ul class="simple">
+<li><p>TODOリストの作り方</p></li>
+<li><p>重要度の付け方（<strong>重要度が高く、テストしやすい</strong> 項目を実現する）</p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>1サイクル<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">TODOリスト</span><a class="headerlink" href="#id18" title="Link to this code">¶</a></div>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="k">- [ ]</span> 数をそのまま文字列に変換する
+<span class="w">  </span><span class="k">- [ ]</span> 1を渡すと文字列1を返す
+<span class="k">- [ ]</span> 3の倍数のときは数の代わりに「Fizz」に変換する
+<span class="k">- [ ]</span> 5の倍数のときは数の代わりに「Buzz」に変換する
+<span class="k">- [ ]</span> 15の倍数のときは数の代わりに「FizzBuzz」に変換する
+</pre></div>
+</div>
+</div>
+<p>1を渡すと文字列1を返す</p>
+<p>Q: どのようにやりますか？</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>かつてのnikkieの場合</p>
+<ul class="simple">
+<li><p>テストを全部書き切る</p></li>
+<li><p>テストが落ちているので実装を書く</p></li>
+<li><p>リファクタリングして次のケースへ</p></li>
+</ul>
+</div>
+<p><strong class="command">ptw</strong> とコマンドを叩き、ファイルの変更のたびにテストが流れるようにします。
+<kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">Ctrl</kbd>+<kbd class="kbd docutils literal notranslate">C</kbd></kbd> で抜けられます</p>
+<section id="red-importerror">
+<h3>Red🟥 ImportError<a class="headerlink" href="#red-importerror" title="Link to this heading">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">tests/test_fizzbuzz.py</span><a class="headerlink" href="#id19" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fizzbuzz</span> <span class="kn">import</span> <span class="n">FizzBuzz</span>
+
+<span class="k">class</span> <span class="nc">TestFizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_1を渡すと文字列1を返す</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>from<span class="w"> </span>fizzbuzz<span class="w"> </span>import<span class="w"> </span>FizzBuzz
+E<span class="w">   </span>ImportError:<span class="w"> </span>cannot<span class="w"> </span>import<span class="w"> </span>name<span class="w"> </span><span class="s1">&#39;FizzBuzz&#39;</span><span class="w"> </span>from<span class="w"> </span><span class="s1">&#39;fizzbuzz&#39;</span><span class="w"> </span><span class="o">(</span>/.../small-technical-2023/examples/tdd/fizzbuzz/__init__.py<span class="o">)</span>
+</pre></div>
+</div>
+<p>テストで使いたいクラスがまだないため、それをimportできないというエラー</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code class="docutils literal notranslate"><span class="pre">ImportError</span></code></p>
+<p><a class="reference external" href="https://docs.python.org/ja/3/library/exceptions.html#ImportError" rel="noopener noreferrer" target="_blank">https://docs.python.org/ja/3/library/exceptions.html#ImportError</a></p>
+</div>
+<p>3原則の1「本番コードがないためテスト失敗」となったので、2「失敗を解決するために本番コードを書く」へ進む</p>
+</section>
+<section id="green-importerror">
+<h3>Green🟩 ImportError解決<a class="headerlink" href="#green-importerror" title="Link to this heading">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">fizzbuzz/__init__.py</span><a class="headerlink" href="#id20" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FizzBuzz</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code class="file docutils literal notranslate"><span class="pre">__init__.py</span></code></p>
+<ul>
+<li><p><code class="file docutils literal notranslate"><span class="pre">__init__.py</span></code> が置かれたディレクトリは <strong>パッケージ</strong> となる</p></li>
+<li><p>パッケージ <code class="docutils literal notranslate"><span class="pre">pkgA</span></code> の <code class="file docutils literal notranslate"><span class="pre">__init__.py</span></code> の <code class="docutils literal notranslate"><span class="pre">Foo</span></code> クラスは <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pkgA</span> <span class="pre">import</span> <span class="pre">Foo</span></code> とimportできる</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pkgA</span></code> の <code class="file docutils literal notranslate"><span class="pre">foo.py</span></code> の <code class="docutils literal notranslate"><span class="pre">Foo</span></code> クラスは <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pkgA.foo</span> <span class="pre">import</span> <span class="pre">Foo</span></code></p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<p>原則3「テストがパスしたら、追加のテストを書く」より、本番コードには何もしないクラスを書くだけ</p>
+</section>
+<section id="red-attributeerror">
+<h3>Red🟥 AttributeError<a class="headerlink" href="#red-attributeerror" title="Link to this heading">¶</a></h3>
+<p>importできるようになったので、アサーションを書く</p>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">tests/test_fizzbuzz.py</span><a class="headerlink" href="#id21" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fizzbuzz</span> <span class="kn">import</span> <span class="n">FizzBuzz</span>
+
+<span class="k">class</span> <span class="nc">TestFizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_1を渡すと文字列1を返す</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fizz_buzz</span> <span class="o">=</span> <span class="n">FizzBuzz</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s2">&quot;1&quot;</span> <span class="o">==</span> <span class="n">fizz_buzz</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>def<span class="w"> </span>test_1を渡すと文字列1を返す<span class="o">(</span>self<span class="o">)</span>:
+<span class="w">        </span><span class="nv">fizz_buzz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FizzBuzz<span class="o">()</span>
+&gt;<span class="w">       </span>assert<span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span>fizz_buzz.convert<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+E<span class="w">       </span>AttributeError:<span class="w"> </span><span class="s1">&#39;FizzBuzz&#39;</span><span class="w"> </span>object<span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>attribute<span class="w"> </span><span class="s1">&#39;convert&#39;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>インスタンス化はできている</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">convert</span></code> メソッドの呼び出しで <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> 送出</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code class="docutils literal notranslate"><span class="pre">AttributeError</span></code></p>
+<p><a class="reference external" href="https://docs.python.org/ja/3/library/exceptions.html#AttributeError" rel="noopener noreferrer" target="_blank">https://docs.python.org/ja/3/library/exceptions.html#AttributeError</a></p>
+</div>
+<p>3原則の1「本番コードがないためテスト失敗」となったので、2「失敗を解決するために本番コードを書く」へ</p>
+</section>
+<section id="attributeerror">
+<h3>AttributeError解決<a class="headerlink" href="#attributeerror" title="Link to this heading">¶</a></h3>
+<p>実装して、convertメソッドを定義</p>
+<div class="literal-block-wrapper docutils container" id="id22">
+<div class="code-block-caption"><span class="caption-text">実装</span><a class="headerlink" href="#id22" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+</pre></div>
+</div>
+</div>
+<p>🟥 AssertionError</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>def<span class="w"> </span>test_1を渡すと文字列1を返す<span class="o">(</span>self<span class="o">)</span>:
+<span class="w">        </span><span class="nv">fizz_buzz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FizzBuzz<span class="o">()</span>
+&gt;<span class="w">       </span>assert<span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span>fizz_buzz.convert<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+E<span class="w">       </span>AssertionError:<span class="w"> </span>assert<span class="w"> </span><span class="s1">&#39;1&#39;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span>
+E<span class="w">         </span>+<span class="w"> </span><span class="m">1</span>
+</pre></div>
+</div>
+<p>まだ 1「本番コードがないためテスト失敗」の状態</p>
+</section>
+<section id="green">
+<h3>Green🟩 <strong>仮実装</strong><a class="headerlink" href="#green" title="Link to this heading">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id23">
+<div class="code-block-caption"><span class="caption-text">実装</span><a class="headerlink" href="#id23" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;1&quot;</span>
+</pre></div>
+</div>
+</div>
+<p>通った。リファクタリングは特になし</p>
+<p>テストがパスしたので次のテストへ</p>
+<p>仮実装で <strong>テストのテスト</strong> をした。
+落ちるべきときに落ち、通るべきときに通る（TDDBCより）</p>
+<ul class="simple">
+<li><p>実装が <code class="docutils literal notranslate"><span class="pre">&quot;1&quot;</span></code> を返すときにテストが通る</p></li>
+<li><p>実装が <code class="docutils literal notranslate"><span class="pre">&quot;1&quot;</span></code> を返さない（最初は空文字列）ならばテストは通らない</p></li>
+</ul>
+</section>
+</section>
+<section id="id4">
+<h2>2サイクル<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<p>キーワード：三角測量</p>
+<ul class="simple">
+<li><p>仮実装した1例がある</p></li>
+<li><p>実装を <strong>一般化するために2例目を追加</strong></p></li>
+<li><p>2例のテストを通すよう実装を一般化</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id24">
+<div class="code-block-caption"><span class="caption-text">TODOリスト</span><a class="headerlink" href="#id24" title="Link to this code">¶</a></div>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="k">- [ ]</span> 数をそのまま文字列に変換する
+<span class="w">  </span><span class="k">- [x]</span> 1を渡すと文字列1を返す
+<span class="w">  </span><span class="k">- [ ]</span> 2を渡すと文字列2を返す
+<span class="k">- [ ]</span> 3の倍数のときは数の代わりに「Fizz」に変換する
+<span class="k">- [ ]</span> 5の倍数のときは数の代わりに「Buzz」に変換する
+<span class="k">- [ ]</span> 15の倍数のときは数の代わりに「FizzBuzz」に変換する
+</pre></div>
+</div>
+</div>
+<section id="red-2">
+<h3>Red🟥 2のケース<a class="headerlink" href="#red-2" title="Link to this heading">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id25">
+<div class="code-block-caption"><span class="caption-text">tests/test_fizzbuzz.py</span><a class="headerlink" href="#id25" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TestFizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_2を渡すと文字列2を返す</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fizz_buzz</span> <span class="o">=</span> <span class="n">FizzBuzz</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s2">&quot;2&quot;</span> <span class="o">==</span> <span class="n">fizz_buzz</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>2件のうち1件通り、1件落ちる 🟩🟥</p>
+</section>
+<section id="green-2">
+<h3>Green🟩 2のケース<a class="headerlink" href="#green-2" title="Link to this heading">¶</a></h3>
+<p>2件通すように実装を修正</p>
+<div class="literal-block-wrapper docutils container" id="id26">
+<div class="code-block-caption"><span class="caption-text">fizzbuzz/__init__.py</span><a class="headerlink" href="#id26" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>通った🙌</p>
+</section>
+<section id="refactor">
+<h3>Refactor 分かりやすい変数名に<a class="headerlink" href="#refactor" title="Link to this heading">¶</a></h3>
+<p>引数 <code class="docutils literal notranslate"><span class="pre">n</span></code> を <code class="docutils literal notranslate"><span class="pre">number</span></code> に変えて分かりやすくする</p>
+<p>VSCodeの <strong>Rename Symbol</strong> を利用</p>
+<div class="literal-block-wrapper docutils container" id="id27">
+<div class="code-block-caption"><span class="caption-text">fizzbuzz/__init__.py</span><a class="headerlink" href="#id27" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="id5">
+<h2>3サイクル<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id28">
+<div class="code-block-caption"><span class="caption-text">TODOリスト</span><a class="headerlink" href="#id28" title="Link to this code">¶</a></div>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="k">- [ ]</span> 数をそのまま文字列に変換する
+<span class="w">  </span><span class="k">- [x]</span> 1を渡すと文字列1を返す
+<span class="w">  </span><span class="k">- [x]</span> 2を渡すと文字列2を返す
+<span class="k">- [ ]</span> 3の倍数のときは数の代わりに「Fizz」に変換する
+<span class="w">  </span><span class="k">- [ ]</span> 3を渡すと文字列Fizzを返す
+<span class="k">- [ ]</span> 5の倍数のときは数の代わりに「Buzz」に変換する
+<span class="k">- [ ]</span> 15の倍数のときは数の代わりに「FizzBuzz」に変換する
+</pre></div>
+</div>
+</div>
+<section id="red-3">
+<h3>Red🟥 3のケース<a class="headerlink" href="#red-3" title="Link to this heading">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id29">
+<div class="code-block-caption"><span class="caption-text">tests/test_fizzbuzz.py</span><a class="headerlink" href="#id29" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TestFizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_3を渡すと文字列Fizzを返す</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fizz_buzz</span> <span class="o">=</span> <span class="n">FizzBuzz</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s2">&quot;Fizz&quot;</span> <span class="o">==</span> <span class="n">fizz_buzz</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>2件通り1件落ちる 🟩🟩🟥</p>
+</section>
+<section id="green-3">
+<h3>Green🟩 3のケース（仮実装）<a class="headerlink" href="#green-3" title="Link to this heading">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id30">
+<div class="code-block-caption"><span class="caption-text">fizzbuzz/__init__.py</span><a class="headerlink" href="#id30" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">number</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Fizz&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>テスト3件通る🙌</p>
+</section>
+<section id="id6">
+<h3>Refactor テストコードの重複除去<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<p>テストコードにはインスタンス化の重複がある。
+pytestの <em>フィクスチャ</em> を使って <strong>インスタンス化を1箇所に</strong> まとめる</p>
+<p>VS Codeの <strong>Extract method</strong> が使える。
+ここではクラスに抽出（モジュールレベルで抽出しても動きます）</p>
+<div class="literal-block-wrapper docutils container" id="id31">
+<div class="code-block-caption"><span class="caption-text">tests/test_fizzbuzz.py</span><a class="headerlink" href="#id31" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+
+
+<span class="k">class</span> <span class="nc">TestFizzBuzz</span><span class="p">:</span>
+    <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+    <span class="k">def</span> <span class="nf">fizz_buzz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FizzBuzz</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">FizzBuzz</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>定義したフィクスチャを各テスト（メソッド）で利用</p>
+<div class="literal-block-wrapper docutils container" id="id32">
+<div class="code-block-caption"><span class="caption-text">tests/test_fizzbuzz.py</span><a class="headerlink" href="#id32" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TestFizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_3を渡すと文字列Fizzを返す</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fizz_buzz</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="s2">&quot;Fizz&quot;</span> <span class="o">==</span> <span class="n">fizz_buzz</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="id7">
+<h3>倍数のときへと一般化<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<p>これまでのサイクルのおかげで自信が少しはあるので、<strong>三角測量を経ずに一般化</strong></p>
+<div class="literal-block-wrapper docutils container" id="id33">
+<div class="code-block-caption"><span class="caption-text">fizzbuzz/__init__.py</span><a class="headerlink" href="#id33" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">number</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Fizz&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2>4サイクル<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id34">
+<div class="code-block-caption"><span class="caption-text">TODOリスト</span><a class="headerlink" href="#id34" title="Link to this code">¶</a></div>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="k">- [ ]</span> 数をそのまま文字列に変換する
+<span class="w">  </span><span class="k">- [x]</span> 1を渡すと文字列1を返す
+<span class="w">  </span><span class="k">- [x]</span> 2を渡すと文字列2を返す
+<span class="k">- [ ]</span> 3の倍数のときは数の代わりに「Fizz」に変換する
+<span class="w">  </span><span class="k">- [x]</span> 3を渡すと文字列Fizzを返す
+<span class="k">- [ ]</span> 5の倍数のときは数の代わりに「Buzz」に変換する
+<span class="w">  </span><span class="k">- [ ]</span> 5を渡すと文字列Buzzを返す
+<span class="k">- [ ]</span> 15の倍数のときは数の代わりに「FizzBuzz」に変換する
+</pre></div>
+</div>
+</div>
+<section id="red-5">
+<h3>Red🟥 5のケース<a class="headerlink" href="#red-5" title="Link to this heading">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id35">
+<div class="code-block-caption"><span class="caption-text">tests/test_fizzbuzz.py</span><a class="headerlink" href="#id35" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TestFizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_5を渡すと文字列Buzzを返す</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fizz_buzz</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="s2">&quot;Buzz&quot;</span> <span class="o">==</span> <span class="n">fizz_buzz</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>3件通り1件落ちる 🟩🟩🟩🟥</p>
+</section>
+<section id="green-5">
+<h3>Green🟩 5のケース（明白な実装）<a class="headerlink" href="#green-5" title="Link to this heading">¶</a></h3>
+<p>明白な実装（ここまで開発してきてテストコードには <strong>自信</strong> がある）</p>
+<div class="literal-block-wrapper docutils container" id="id36">
+<div class="code-block-caption"><span class="caption-text">fizzbuzz/__init__.py</span><a class="headerlink" href="#id36" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">number</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Fizz&quot;</span>
+        <span class="k">if</span> <span class="n">number</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Buzz&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>4件通る🙌</p>
+</section>
+</section>
+<section id="id9">
+<h2>5サイクル<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id37">
+<div class="code-block-caption"><span class="caption-text">TODOリスト</span><a class="headerlink" href="#id37" title="Link to this code">¶</a></div>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="k">- [ ]</span> 数をそのまま文字列に変換する
+<span class="w">  </span><span class="k">- [x]</span> 1を渡すと文字列1を返す
+<span class="w">  </span><span class="k">- [x]</span> 2を渡すと文字列2を返す
+<span class="k">- [ ]</span> 3の倍数のときは数の代わりに「Fizz」に変換する
+<span class="w">  </span><span class="k">- [x]</span> 3を渡すと文字列Fizzを返す
+<span class="k">- [ ]</span> 5の倍数のときは数の代わりに「Buzz」に変換する
+<span class="w">  </span><span class="k">- [x]</span> 5を渡すと文字列Buzzを返す
+<span class="k">- [ ]</span> 15の倍数のときは数の代わりに「FizzBuzz」に変換する
+<span class="w">  </span><span class="k">- [ ]</span> 15を渡すと文字列FizzBuzzを返す
+</pre></div>
+</div>
+</div>
+<section id="red-15">
+<h3>Red🟥 15のケース<a class="headerlink" href="#red-15" title="Link to this heading">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id38">
+<div class="code-block-caption"><span class="caption-text">tests/test_fizzbuzz.py</span><a class="headerlink" href="#id38" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TestFizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_15を渡すと文字列FizzBuzzを返す</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fizz_buzz</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="s2">&quot;FizzBuzz&quot;</span> <span class="o">==</span> <span class="n">fizz_buzz</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>3件通り1件落ちる 🟩🟩🟩🟩🟥</p>
+</section>
+<section id="green-15">
+<h3>Green🟩 15のケース<a class="headerlink" href="#green-15" title="Link to this heading">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id39">
+<div class="code-block-caption"><span class="caption-text">実装</span><a class="headerlink" href="#id39" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FizzBuzz</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">number</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">number</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;FizzBuzz&quot;</span>
+        <span class="k">if</span> <span class="n">number</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Fizz&quot;</span>
+        <span class="k">if</span> <span class="n">number</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Buzz&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>5件通る🙌🙌</p>
+<div class="literal-block-wrapper docutils container" id="id40">
+<div class="code-block-caption"><span class="caption-text">TODOリスト</span><a class="headerlink" href="#id40" title="Link to this code">¶</a></div>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="k">- [ ]</span> 数をそのまま文字列に変換する
+<span class="w">  </span><span class="k">- [x]</span> 1を渡すと文字列1を返す
+<span class="w">  </span><span class="k">- [x]</span> 2を渡すと文字列2を返す
+<span class="k">- [ ]</span> 3の倍数のときは数の代わりに「Fizz」に変換する
+<span class="w">  </span><span class="k">- [x]</span> 3を渡すと文字列Fizzを返す
+<span class="k">- [ ]</span> 5の倍数のときは数の代わりに「Buzz」に変換する
+<span class="w">  </span><span class="k">- [x]</span> 5を渡すと文字列Buzzを返す
+<span class="k">- [ ]</span> 15の倍数のときは数の代わりに「FizzBuzz」に変換する
+<span class="w">  </span><span class="k">- [x]</span> 15を渡すと文字列FizzBuzzを返す
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="id10">
+<h2>考察<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
+<p>ケント・ベックの定義（2つのルール 『テスト駆動開発』Kindle の位置No.33-34）</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>自動化されたテストが失敗したときのみ、新しいコードを書く。</p></li>
+<li><p>重複を除去する。</p></li>
+</ul>
+</div></blockquote>
+<p>Red -&gt; Green -&gt; Refactor</p>
+<p>Uncle Bobの3原則でTDDを進めると、 <strong>strict</strong> になった</p>
+<section id="before">
+<h3>Before（小さいテスト駆動開発を知る前）<a class="headerlink" href="#before" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>1のケースのテストコードを一気に全部書く（Red🟥）</p></li>
+<li><p>1のケースのテストを通す実装を全部書く（Green🟩）</p></li>
+<li><p>リファクタリング</p></li>
+<li><p>2のケースのテストコードへ</p></li>
+</ul>
+<p>1つのテストケースに対してRedとGreenは1つずつ。</p>
+</section>
+<section id="id11">
+<h3>小さいテスト駆動開発<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<p>これに対して、ここで見た小さいテスト駆動開発では、RedとGreenを細かく行き来する</p>
+<ul class="simple">
+<li><p>1のケースのテストコードをエラーが出るまで書く（Red🟥）</p></li>
+<li><p>上記のエラーを解決する実装を書く（Green🟩）</p></li>
+<li><p>リファクタリング</p></li>
+<li><p>1のケースのテストコードの続きをエラーが出るまで書く（Red🟥）</p></li>
+<li><p>上記のエラーを解決する実装を書く（Green🟩）</p></li>
+<li><p>リファクタリング</p></li>
+<li><p>1のケースのテストコードの続きをエラーが出るまで書く（Red🟥）</p></li>
+<li><p>上記のエラーを解決する実装を書く（Green🟩）</p></li>
+<li><p>リファクタリング</p></li>
+<li><p>2のケースのテストコードへ</p></li>
+</ul>
+<p>テストも実装も <strong>少しずつ</strong> できあがっていく！</p>
+</section>
+</section>
+<section id="id12">
+<h2>この先<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
+<section id="id13">
+<h3>動作するドキュメントにする<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
+<p>TDD Boot Campでは、t-wadaさんはこのあと、テストコードを <strong>動作するドキュメント</strong> にしていく</p>
+<ul class="simple">
+<li><p>TODOリスト（仕様）のネスト構造をテストコードに反映</p>
+<ul>
+<li><p>テストコードで <strong>クラスがネスト</strong> する</p></li>
+</ul>
+</li>
+<li><p>テストを <strong>最小限</strong> にしておく</p>
+<ul>
+<li><p>三角測量で作ったテストは片方 <strong>消す</strong> （書いた人だけが三角測量で進んだから似たテストがあると分かっている）</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tdd">
+<h3>モックを使ったTDDの例<a class="headerlink" href="#tdd" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>『ちょうぜつ本（<a class="reference external" href="https://gihyo.jp/book/2022/978-4-297-13234-7" rel="noopener noreferrer" target="_blank">ちょうぜつソフトウェア設計入門</a>）』より、FizzBuzzを <strong>シンプルな設計</strong> で実装する</p>
+<ul>
+<li><p><em>畳み込み演算</em> と看破した例</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="id14">
+<h2>参考文献<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>『<a class="reference external" href="https://asciidwango.jp/post/693992928727760896/clean-craftsmanship" rel="noopener noreferrer" target="_blank">Clean Craftsmanship</a>』</p></li>
+<li><p><a class="reference external" href="https://www.youtube.com/live/Q-FJ3XmFlT8?si=KB5q9QOpTE-UyQCb" rel="noopener noreferrer" target="_blank">TDD Boot Camp 2020 Online #1 基調講演/ライブコーディング</a></p></li>
+<li><p>『<a class="reference external" href="https://www.ohmsha.co.jp/book/9784274217883/" rel="noopener noreferrer" target="_blank">テスト駆動開発</a>』</p>
+<ul>
+<li><p>仮実装・明白な実装・三角測量（第1章〜第3章）</p></li>
+</ul>
+</li>
+<li><p>『<a class="reference external" href="https://www.shoeisha.co.jp/book/detail/9784798177458" rel="noopener noreferrer" target="_blank">テスト駆動Python 第2版</a>』</p></li>
+</ul>
+<section id="id15">
+<h3>関連アウトプット<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://nikkie-ftnext.hatenablog.com/entry/clean-craftsmanship-small-small-test-driven-development-introduction" rel="noopener noreferrer" target="_blank">読書ログ | 『Clean Craftsmanship』 第2章より、Uncle Bobのテスト駆動開発は驚くほど小さなステップの積み重ね！</a></p>
+<ul>
+<li><p>写経 <a class="reference external" href="https://github.com/ftnext/road-to-craft-skills-py/tree/main/int-stack" rel="noopener noreferrer" target="_blank">https://github.com/ftnext/road-to-craft-skills-py/tree/main/int-stack</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://nikkie-ftnext.hatenablog.com/entry/tddbc-2020-online-archive-twada-keynote-live-coding-log" rel="noopener noreferrer" target="_blank">おーい、t-wadaさん、ペアプロしようぜ！TDD Boot Camp 2020 Online #1 基調講演/ライブコーディング 視聴ログ🦁</a></p>
+<ul>
+<li><p>写経 <a class="reference external" href="https://github.com/ftnext/tddbc-fizzbuzz" rel="noopener noreferrer" target="_blank">https://github.com/ftnext/tddbc-fizzbuzz</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://nikkie-ftnext.hatenablog.com/entry/pytest-learn-setup-method-and-fixture" rel="noopener noreferrer" target="_blank">pytestでテストの前準備 〜setup_methodとフィクスチャ〜</a></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Small Technical Practices Workshop</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">ようこそ！</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#id2">環境構築</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">小さいテスト駆動開発</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#uncle-bob">Uncle Bob流 テスト駆動開発</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fizzbuzz">ハンズオンの題材 FizzBuzz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">環境構築</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#todo">TODOリスト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">1サイクル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">2サイクル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">3サイクル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">4サイクル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">5サイクル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">考察</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">この先</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id14">参考文献</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapter-refactoring.html">小さいリファクタリング</a></li>
+<li class="toctree-l1"><a class="reference internal" href="practice.html">ぶつかり稽古</a></li>
+<li class="toctree-l1"><a class="reference internal" href="summary.html">終わりに</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="introduction.html" title="前の章へ">ようこそ！</a></li>
+      <li>Next: <a href="chapter-refactoring.html" title="次の章へ">小さいリファクタリング</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023, nikkie.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.0.2</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/chapter-tdd.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
